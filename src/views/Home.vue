@@ -1,20 +1,15 @@
 <template>
-  <div class="home">
-    
-    <roles/>
-  </div>
+  <hello-world />
 </template>
 
 <script>
-// @ is an alias to /src
-import roles from '@/views/roles.vue'
+  import HelloWorld from '../components/HelloWorld'
 
+  export default {
+    name: 'Home',
 
-export default {
-  name: 'Home',
-  components: {
-    roles
-    
+    components: {
+      HelloWorld,
+    },
   }
-}
 </script>

@@ -1,407 +1,582 @@
 <template>
-  <div class="container-fluid">
-    <header>
-      <h2>{{ menu }}</h2>
-    </header>
-    <div>
-      <div class="content">
-        <div class="colors">
-          <a class="default" href="javascript:void(0)"></a>
-          <a class="blue" href="javascript:void(0)"></a>
-          <a class="green" href="javascript:void(0)"></a>
-          <a class="red" href="javascript:void(0)"></a>
-          <a class="white" href="javascript:void(0)"></a>
-          <a class="black" href="javascript:void(0)"></a>
-        </div>
-        <div id="jquery-accordion-menu" class="jquery-accordion-menu">
-          <div class="jquery-accordion-menu-header">Header</div>
-          <ul>
-            <li class="active">
-              <a href="#"><i class="fa fa-home"></i>Home </a>
-            </li>
-            <li>
-              <a href="#"><i class="fa fa-glass"></i>Events </a>
-            </li>
-            <li>
-              <a href="#"><i class="fa fa-file-image-o"></i>Gallery </a
-              ><span class="jquery-accordion-menu-label">12 </span>
-            </li>
-            <li>
-              <a href="#"><i class="fa fa-cog"></i>Services </a>
-              <ul class="submenu">
-                <li><a href="#"> Web Design </a></li>
-                <li><a href="#">Hosting </a></li>
-                <li>
-                  <a href="#">Design </a>
-                  <ul class="submenu">
-                    <li><a href="#">Graphics </a></li>
-                    <li><a href="#">Vectors </a></li>
-                    <li><a href="#">Photoshop </a></li>
-                    <li><a href="#">Fonts </a></li>
-                  </ul>
-                </li>
-                <li><a href="#">Consulting </a></li>
-              </ul>
-            </li>
-            <li>
-              <a href="#"><i class="fa fa-newspaper-o"></i>News </a>
-            </li>
-            <li>
-              <a href="#"><i class="fa fa-suitcase"></i>Portfolio </a>
-              <ul class="submenu">
-                <li><a href="#">Web Design </a></li>
-                <li>
-                  <a href="#">Graphics </a
-                  ><span class="jquery-accordion-menu-label">10 </span>
-                </li>
-                <li><a href="#">Photoshop </a></li>
-                <li><a href="#">Programming </a></li>
-              </ul>
-            </li>
-            <li>
-              <a href="#"><i class="fa fa-user"></i>About </a>
-            </li>
-            <li>
-              <a href="#"><i class="fa fa-envelope"></i>Contact </a>
-            </li>
-          </ul>
-          <div class="jquery-accordion-menu-footer">Footer</div>
+  <div>
+    <header class="bg_animate">
+      <div class="header_nav">
+        <div class="contenedor">
+          <v-btn color="white" dark @click.stop="drawer = !drawer">
+            <v-col>
+              <v-btn icon color="black">
+                <v-icon>mdi-home</v-icon>
+              </v-btn>
+            </v-col>
+          </v-btn>
+          <h1>Inicio</h1>
+
+          <v-badge bordered color="error" icon="mdi-lock" overlap>
+            <v-btn
+              class="black--text"
+              color="white"
+              depressed
+              @click="cerrarSesion"
+            >
+              Cerrar Sesión
+            </v-btn>
+          </v-badge>
         </div>
       </div>
+    </header>
+
+    <div>
+      <v-app id="inspire">
+        <v-sheet
+          height="700"
+          class="overflow-hidden"
+          style="position: relative"
+        >
+          <v-navigation-drawer v-model="drawer" absolute temporary>
+            <v-list-item class="lista">
+              <v-list class="menuBajar" nav dense>
+                <v-app id="inspire">
+                  <div>
+                    <template>
+                      <div>
+                        <v-expansion-panels v-model="panel">
+
+                          <template v-if="this.$store.state.rol   =='loginadmin' "> 
+                
+                          <v-expansion-panel>
+                            <v-expansion-panel-header
+                              >Almacen</v-expansion-panel-header
+                            >
+                            <v-expansion-panel-content class="contenido">
+                              <router-link to="/categorias">
+                                <v-icon>mdi-clipboard-text</v-icon>
+                                <v-btn
+                                  @click="cat"
+                                  id="linea"
+                                  text
+                                  color="secondary"
+                                  >Categorias</v-btn
+                                ></router-link
+                              >
+                            </v-expansion-panel-content>
+                            <v-expansion-panel-content class="contenido">
+                              <router-link to="/articulos">
+                                <v-icon>mdi-clipboard-text</v-icon>
+                                <v-btn @click="art" text color="secondary"
+                                  >Articulos</v-btn
+                                ></router-link
+                              >
+                            </v-expansion-panel-content>
+                          </v-expansion-panel>
+
+                          </template>
+
+
+                          <template v-if="this.$store.state.rol=='loginadmin' ||this.$store.state.rol=='loginalmacenista'" >
+                            
+                          <v-expansion-panel >
+                            <v-expansion-panel-header
+                              >Compras</v-expansion-panel-header
+                            >
+                            <v-expansion-panel-content class="contenido">
+                              <router-link to="/ingresos">
+                                <v-icon color="grey lighten-1">
+                                  mdi-cart
+                                </v-icon>
+                                <v-btn @click="ing" text color="secondary"
+                                  >Ingresos</v-btn
+                                ></router-link
+                              >
+                            </v-expansion-panel-content>
+                            <v-expansion-panel-content class="contenido">
+                              <router-link to="/proveedores">
+                                <v-icon>mdi-account-circle</v-icon>
+                                <v-btn @click="prov" text color="secondary"
+                                  >Proveedores</v-btn
+                                ></router-link
+                              >
+                            </v-expansion-panel-content>
+                          </v-expansion-panel>
+
+                          </template>
+
+
+                          <template v-if="this.$store.state.rol=='loginadmin' ||this.$store.state.rol=='loginvendedor'">
+                            
+                          <v-expansion-panel > 
+                            <v-expansion-panel-header
+                              >Ventas</v-expansion-panel-header
+                            >
+                            <v-expansion-panel-content class="contenido">
+                              <router-link to="/ventas">
+                                <v-icon color="grey lighten-1">
+                                  mdi-cart
+                                </v-icon>
+                                <v-btn @click="vent" text color="secondary"
+                                  >Ventas</v-btn
+                                ></router-link
+                              >
+                            </v-expansion-panel-content>
+                            <v-expansion-panel-content class="contenido">
+                              <router-link to="/clientes">
+                                <v-icon>mdi-account-circle</v-icon>
+                                <v-btn @click="cli" text color="secondary"
+                                  >Clientes</v-btn
+                                ></router-link
+                              >
+                            </v-expansion-panel-content>
+                          </v-expansion-panel>
+
+                          </template>
+
+
+                          <template v-if="this.$store.state.rol=='loginadmin'">
+                            
+                          <v-expansion-panel>
+                            <v-expansion-panel-header
+                              >Accesos</v-expansion-panel-header
+                            >
+                            <v-expansion-panel-content class="contenido">
+                              <router-link to="/usuarios">
+                                <v-icon>mdi-account-circle</v-icon>
+                                <v-btn @click="usu" text color="secondary"
+                                  >Usuarios</v-btn
+                                ></router-link
+                              >
+                            </v-expansion-panel-content>
+                          </v-expansion-panel>
+
+                          </template>
+
+
+                        </v-expansion-panels>
+                      </div>
+                    </template>
+                  </div>
+                </v-app>
+              </v-list>
+            </v-list-item>
+          </v-navigation-drawer>
+
+          <section class="banner contenedor">
+            <section class="banner_title">
+              <h2>Bienvenid@</h2>
+            </section>
+            <div class="banner_img">
+              <img src="../assets/perfiles/disenotienda.png" alt="" />
+            </div>
+          </section>
+
+          <div class="burbujas">
+            <div class="burbuja"></div>
+            <div class="burbuja"></div>
+            <div class="burbuja"></div>
+            <div class="burbuja"></div>
+            <div class="burbuja"></div>
+            <div class="burbuja"></div>
+            <div class="burbuja"></div>
+            <div class="burbuja"></div>
+            <div class="burbuja"></div>
+            <div class="burbuja"></div>
+          </div>
+        </v-sheet>
+      </v-app>
     </div>
   </div>
 </template>
 <script>
+import Swal from "sweetalert2";
+import "@mdi/font/css/materialdesignicons.css";
+//import Dropdown from "./Dropdown";
 export default {
-  name: "menu",
+  name: "navigation",
+  components: {},
   data() {
     return {
-      menu: "menu",
-      
+      detalles: [],
+      selectedItem: 0,
+      drawer: null,
+      panel: [0, 1],
+      disabled: false,
+      readonly: false,
     };
+  },
+  methods: {
+    cerrarSesion() {
+      Swal.fire({
+        background: "black",
+        position: "top-center",
+        icon: "success",
+        title: "Su sesión ha finalizado con éxito",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      this.$store.dispatch("setToken", "");
+      this.$router.push("/roles");
+    },
+    cat() {
+      Swal.fire({
+        title: "Categorias",
+        width: 400,
+        height: 200,
+        position: "center",
+        padding: "3em",
+        background:
+          "url(https://cdn.pixabay.com/photo/2017/06/24/16/50/blue-2438160_960_720.png)",
+        backdrop: `
+       rgba(0,0,123,0.4)
+       url("https://m.gifanimados.com/Gifs-Objetos/Animaciones-Hogar/Carros-Compra/Monigote-Con-Carro-90318.gif")
+       center top
+       no-repeat
+       
+      `,
+      });
+    },
+    art() {
+      Swal.fire({
+        title: "Articulos",
+        width: 400,
+        height: 200,
+        position: "center",
+        padding: "3em",
+        background:
+          "url(https://cdn.pixabay.com/photo/2017/06/24/16/50/blue-2438160_960_720.png)",
+        backdrop: `
+       rgba(0,0,123,0.4)
+       url("https://m.gifanimados.com/Gifs-Objetos/Animaciones-Hogar/Carros-Compra/Monigote-Con-Carro-90318.gif")
+       center top
+       no-repeat
+       
+      `,
+      });
+    },
+    ing() {
+      Swal.fire({
+        title: "Ingresos",
+        width: 400,
+        height: 200,
+        position: "center",
+        padding: "3em",
+        background:
+          "url(https://cdn.pixabay.com/photo/2017/06/24/16/50/blue-2438160_960_720.png)",
+        backdrop: `
+       rgba(0,0,123,0.4)
+       url("https://m.gifanimados.com/Gifs-Objetos/Animaciones-Hogar/Carros-Compra/Monigote-Con-Carro-90318.gif")
+       center top
+       no-repeat
+       
+      `,
+      });
+    },
+    prov() {
+      Swal.fire({
+        title: "Proveedores",
+        width: 400,
+        height: 200,
+        position: "center",
+        padding: "3em",
+        background:
+          "url(https://cdn.pixabay.com/photo/2017/06/24/16/50/blue-2438160_960_720.png)",
+        backdrop: `
+       rgba(0,0,123,0.4)
+       url("https://m.gifanimados.com/Gifs-Objetos/Animaciones-Hogar/Carros-Compra/Monigote-Con-Carro-90318.gif")
+       center top
+       no-repeat
+       
+      `,
+      });
+    },
+    vent() {
+      Swal.fire({
+        title: "ventas",
+        width: 400,
+        height: 200,
+        position: "center",
+        padding: "3em",
+        background:
+          "url(https://cdn.pixabay.com/photo/2017/06/24/16/50/blue-2438160_960_720.png)",
+        backdrop: `
+       rgba(0,0,123,0.4)
+       url("https://m.gifanimados.com/Gifs-Objetos/Animaciones-Hogar/Carros-Compra/Monigote-Con-Carro-90318.gif")
+       center top
+       no-repeat
+       
+      `,
+      });
+    },
+    cli() {
+      Swal.fire({
+        title: "Clientes",
+        width: 400,
+        height: 200,
+        position: "center",
+        padding: "3em",
+        background:
+          "url(https://cdn.pixabay.com/photo/2017/06/24/16/50/blue-2438160_960_720.png)",
+        backdrop: `
+       rgba(0,0,123,0.4)
+       url("https://m.gifanimados.com/Gifs-Objetos/Animaciones-Hogar/Carros-Compra/Monigote-Con-Carro-90318.gif")
+       center top
+       no-repeat
+       
+      `,
+      });
+    },
+    usu() {
+      Swal.fire({
+        title: "usuarios",
+        width: 400,
+        height: 200,
+        position: "center",
+        padding: "3em",
+        background:
+          "url(https://cdn.pixabay.com/photo/2017/06/24/16/50/blue-2438160_960_720.png)",
+        backdrop: `
+       rgba(0,0,123,0.4)
+       url("https://m.gifanimados.com/Gifs-Objetos/Animaciones-Hogar/Carros-Compra/Monigote-Con-Carro-90318.gif")
+       center top
+       no-repeat
+       
+      `,
+      });
+    },
   },
 };
 </script>
 <style>
-h2 {
-  text-align: center;
-  background-color: aquamarine;
-  font-family: "Times New Roman", Times, serif;
-  font-size: 30px;
-  text-transform: capitalize;
+.contenido {
+  font-size: 18px;
+  width: 10px;
 }
-* {
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
+h3 {
+  margin-top: 2px;
+  font-size: 35px;
+  text-transform: uppercase;
+  font-family: "DM Serif Display", serif;
+  color: black;
 }
-body {
-  background: #f0f0f0;
-}
-.content {
-  width: 260px;
-  margin: 100px auto;
-}
-.colors {
-  width: 260px;
-  float: left;
-  margin: 20px auto;
-}
-.colors a {
-  width: 43.3px;
-  height: 30px;
-  float: left;
-}
-.colors .default {
-  background: #414956;
-}
-.colors .blue {
-  background: #4a89dc;
-}
-.colors .green {
-  background: #03a678;
-}
-.colors .red {
-  background: #ed5565;
-}
-.colors .white {
-  background: #fff;
-}
-.colors .black {
-  background: #292929;
+h4 {
+  font-family: "DM Serif Display", serif;
+  font-size: 24px;
 }
 
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700);
-.jquery-accordion-menu,
-.jquery-accordion-menu * {
-  font-family: "Open Sans", sans-serif;
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  outline: 0;
+.lista {
+  margin-top: 12px;
+  font-size: 24px;
+  height: 60px;
+  text-align: center;
 }
-.jquery-accordion-menu {
-  min-width: 260px;
-  float: left;
-  position: relative;
-  box-shadow: 0 20px 50px #333;
+.menuBajar {
+  height: 40px;
+  margin-top: 25px;
 }
-.jquery-accordion-menu .jquery-accordion-menu-footer,
-.jquery-accordion-menu .jquery-accordion-menu-header {
-  width: 100%;
-  height: 50px;
-  padding-left: 22px;
-  float: left;
-  line-height: 50px;
-  font-weight: 600;
-  color: #f0f0f0;
-  background: #414956;
-}
-.jquery-accordion-menu ul {
+
+/*Grafico y Bienvenid@*/
+* {
   margin: 0;
   padding: 0;
-  list-style: none;
+  box-sizing: border-box;
 }
-.jquery-accordion-menu ul li {
-  width: 100%;
-  display: block;
-  float: left;
-  position: relative;
+
+body {
+  font-family: "Roboto", "Sans serif";
 }
-.jquery-accordion-menu ul li a {
+.overflow-hidden {
+  background: url("https://www.webcoderskull.com/img/abouts-bg.png") no-repeat
+    center top / cover;
+}
+.contenedor {
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.bg_animate {
   width: 100%;
-  padding: 14px 22px;
-  float: left;
-  text-decoration: none;
-  color: #f0f0f0;
-  font-size: 13px;
-  background: #414956;
-  white-space: nowrap;
+  height: 12vh;
   position: relative;
   overflow: hidden;
-  -o-transition: color 0.2s linear, background 0.2s linear;
-  -moz-transition: color 0.2s linear, background 0.2s linear;
-  -webkit-transition: color 0.2s linear, background 0.2s linear;
-  transition: color 0.2s linear, background 0.2s linear;
 }
-.jquery-accordion-menu > ul > li.active > a,
-.jquery-accordion-menu > ul > li:hover > a {
+
+.header_nav {
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: black;
+}
+
+.header_nav .contenedor {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+}
+
+.header_nav h1 {
   color: #fff;
-  background: #3b424d;
+  font-family: "Gagalin";
 }
-.jquery-accordion-menu > ul > li > a {
-  border-bottom: solid 1px #3b424d;
+
+.header_nav nav a {
+  color: #fff;
+  text-decoration: none;
+  margin-right: 10px;
 }
-.jquery-accordion-menu ul li a i {
-  width: 34px;
-  float: left;
-  line-height: 18px;
-  font-size: 16px;
-  text-align: left;
+
+.banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
 }
-.jquery-accordion-menu .submenu-indicator {
-  float: right;
-  right: 22px;
-  position: absolute;
-  line-height: 19px;
-  font-size: 20px;
-  -o-transition: transform 0.3s linear;
-  -moz-transition: transform 0.3s linear;
-  -webkit-transition: transform 0.3s linear;
-  -ms-transition: transform 0.3s linear;
-}
-.jquery-accordion-menu ul ul.submenu .submenu-indicator {
-  line-height: 16px;
-}
-.jquery-accordion-menu .submenu-indicator-minus > .submenu-indicator {
-  -ms-transform: rotate(45deg);
-  -moz-transform: rotate(45deg);
-  -webkit-transform: rotate(45deg);
-  transform: rotate(45deg);
-}
-.jquery-accordion-menu ul ul.submenu,
-.jquery-accordion-menu ul ul.submenu li ul.submenu {
-  width: 100%;
-  display: none;
-  position: static;
-}
-.jquery-accordion-menu ul ul.submenu li {
-  clear: both;
-  width: 100%;
-}
-.jquery-accordion-menu ul ul.submenu li a {
-  width: 100%;
-  float: left;
-  font-size: 11px;
-  background: #383838;
-  border-top: none;
-  position: relative;
-  border-left: solid 6px transparent;
-  -o-transition: border 0.2s linear;
-  -moz-transition: border 0.2s linear;
-  -webkit-transition: border 0.2s linear;
-  transition: border 0.2s linear;
-}
-.jquery-accordion-menu ul ul.submenu li:hover > a {
-  border-left-color: #414956;
-}
-.jquery-accordion-menu ul ul.submenu > li > a {
-  padding-left: 30px;
-}
-.jquery-accordion-menu ul ul.submenu > li > ul.submenu > li > a {
-  padding-left: 45px;
-}
-.jquery-accordion-menu
-  ul
-  ul.submenu
-  > li
-  > ul.submenu
-  > li
-  > ul.submenu
-  > li
-  > a {
-  padding-left: 60px;
-}
-.jquery-accordion-menu ul li .jquery-accordion-menu-label,
-.jquery-accordion-menu ul ul.submenu li .jquery-accordion-menu-label {
-  min-width: 20px;
-  padding: 1px 2px 1px 1px;
-  position: absolute;
-  right: 18px;
-  top: 14px;
-  font-size: 11px;
+
+.banner_title h2 {
+  color: rgb(0, 0, 0);
+  font-size: 60px;
   font-weight: 800;
-  color: #555;
-  text-align: center;
-  line-height: 18px;
-  background: #f0f0f0;
-  border-radius: 100%;
+  margin-bottom: 20px;
+  margin-left: 200px;
+  /*text-shadow: 2px 4px  #fff;*/
+  text-shadow: 0 0 20px #fefcc9, 2px -2px 3px #f29f05, -4px -4px 5px #f21f0c,
+    5px -10px 6px #043c5d, -5px -12px 8px #23a5d9, 0 -15px 20px #024059,
+    2px -15px 20px #23a5d9;
+  color: rgb(3, 3, 3);
 }
-.jquery-accordion-menu ul ul.submenu li .jquery-accordion-menu-label {
-  top: 12px;
+
+#bienvenido {
+  text-shadow: 5px 5px 5px 5px solid rgb(255, 0, 0);
 }
-.ink {
+
+.banner_img {
+  animation: movimiento 2.5s linear infinite;
+}
+
+.banner_img img {
+  width: 600px;
   display: block;
+}
+
+/* burbujas */
+
+.burbuja {
+  border-radius: 50%;
+  background: rgb(255, 255, 255);
+  opacity: 0.3;
+
   position: absolute;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 100%;
-  -webkit-transform: scale(0);
-  -moz-transform: scale(0);
-  -ms-transform: scale(0);
-  -o-transform: scale(0);
-  transform: scale(0);
+  bottom: -150;
+
+  animation: burbujas 3s linear infinite;
 }
-.animate-ink {
-  -webkit-animation: ripple 0.5s linear;
-  -moz-animation: ripple 0.5s linear;
-  -ms-animation: ripple 0.5s linear;
-  -o-animation: ripple 0.5s linear;
-  animation: ripple 0.5s linear;
+
+.burbuja:nth-child(1) {
+  width: 80px;
+  height: 80px;
+  left: 5%;
+  animation-duration: 3s;
+  animation-delay: 3s;
 }
-@-webkit-keyframes ripple {
-  100% {
+
+.burbuja:nth-child(2) {
+  width: 100px;
+  height: 100px;
+  left: 35%;
+  animation-duration: 3s;
+  animation-delay: 5s;
+}
+
+.burbuja:nth-child(3) {
+  width: 20px;
+  height: 20px;
+  left: 15%;
+  animation-duration: 1.5s;
+  animation-delay: 7s;
+}
+
+.burbuja:nth-child(4) {
+  width: 50px;
+  height: 50px;
+  left: 90%;
+  animation-duration: 6s;
+  animation-delay: 3s;
+}
+
+.burbuja:nth-child(5) {
+  width: 70px;
+  height: 70px;
+  left: 65%;
+  animation-duration: 3s;
+  animation-delay: 1s;
+}
+
+.burbuja:nth-child(6) {
+  width: 20px;
+  height: 20px;
+  left: 50%;
+  animation-duration: 4s;
+  animation-delay: 5s;
+}
+
+.burbuja:nth-child(7) {
+  width: 20px;
+  height: 20px;
+  left: 50%;
+  animation-duration: 4s;
+  animation-delay: 5s;
+}
+
+.burbuja:nth-child(8) {
+  width: 100;
+  height: 100px;
+  left: 52%;
+  animation-duration: 5s;
+  animation-delay: 5s;
+}
+
+.burbuja:nth-child(9) {
+  width: 65px;
+  height: 65px;
+  left: 51%;
+  animation-duration: 3s;
+  animation-delay: 2s;
+}
+
+.burbuja:nth-child(10) {
+  width: 40px;
+  height: 40px;
+  left: 35%;
+  animation-duration: 3s;
+  animation-delay: 4s;
+}
+
+@keyframes burbujas {
+  0% {
+    bottom: 0;
     opacity: 0;
-    -webkit-transform: scale(2.5);
+  }
+  30% {
+    transform: translateX(30px);
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    bottom: 100vh;
+    opacity: 0;
   }
 }
-@-moz-keyframes ripple {
-  100% {
-    opacity: 0;
-    -moz-transform: scale(2.5);
+
+@keyframes movimiento {
+  0% {
+    transform: translateY(0);
   }
-}
-@-o-keyframes ripple {
-  100% {
-    opacity: 0;
-    -o-transform: scale(2.5);
+  50% {
+    transform: translateY(30px);
   }
-}
-@keyframes ripple {
   100% {
-    opacity: 0;
-    transform: scale(2.5);
+    transform: translateY(0);
   }
-}
-.blue.jquery-accordion-menu .jquery-accordion-menu-footer,
-.blue.jquery-accordion-menu .jquery-accordion-menu-header,
-.blue.jquery-accordion-menu ul li a {
-  background: #4a89dc;
-}
-.blue.jquery-accordion-menu > ul > li.active > a,
-.blue.jquery-accordion-menu > ul > li:hover > a {
-  background: #3e82da;
-}
-.blue.jquery-accordion-menu > ul > li > a {
-  border-bottom-color: #3e82da;
-}
-.blue.jquery-accordion-menu ul ul.submenu li:hover > a {
-  border-left-color: #3e82da;
-}
-.green.jquery-accordion-menu .jquery-accordion-menu-footer,
-.green.jquery-accordion-menu .jquery-accordion-menu-header,
-.green.jquery-accordion-menu ul li a {
-  background: #03a678;
-}
-.green.jquery-accordion-menu > ul > li.active > a,
-.green.jquery-accordion-menu > ul > li:hover > a {
-  background: #049372;
-}
-.green.jquery-accordion-menu > ul > li > a {
-  border-bottom-color: #049372;
-}
-.green.jquery-accordion-menu ul ul.submenu li:hover > a {
-  border-left-color: #049372;
-}
-.red.jquery-accordion-menu .jquery-accordion-menu-footer,
-.red.jquery-accordion-menu .jquery-accordion-menu-header,
-.red.jquery-accordion-menu ul li a {
-  background: #ed5565;
-}
-.red.jquery-accordion-menu > ul > li.active > a,
-.red.jquery-accordion-menu > ul > li:hover > a {
-  background: #da4453;
-}
-.red.jquery-accordion-menu > ul > li > a {
-  border-bottom-color: #da4453;
-}
-.red.jquery-accordion-menu ul ul.submenu li:hover > a {
-  border-left-color: #da4453;
-}
-.white.jquery-accordion-menu .jquery-accordion-menu-footer,
-.white.jquery-accordion-menu .jquery-accordion-menu-header,
-.white.jquery-accordion-menu ul li a {
-  background: #fff;
-  color: #555;
-}
-.white.jquery-accordion-menu > ul > li.active > a,
-.white.jquery-accordion-menu > ul > li:hover > a {
-  background: #f0f0f0;
-}
-.white.jquery-accordion-menu > ul > li > a {
-  border-bottom-color: #f0f0f0;
-}
-.white.jquery-accordion-menu ul ul.submenu li:hover > a {
-  border-left-color: #f0f0f0;
-}
-.white.jquery-accordion-menu ul ul.submenu li a {
-  color: #f0f0f0;
-}
-.white.jquery-accordion-menu > ul > li > a > .ink {
-  background: rgba(0, 0, 0, 0.1);
-}
-.black.jquery-accordion-menu .jquery-accordion-menu-footer,
-.black.jquery-accordion-menu .jquery-accordion-menu-header,
-.black.jquery-accordion-menu ul li a {
-  background: #292929;
-}
-.black.jquery-accordion-menu > ul > li.active > a,
-.black.jquery-accordion-menu > ul > li:hover > a {
-  background: #222;
-}
-.black.jquery-accordion-menu > ul > li > a {
-  border-bottom-color: #222;
-}
-.black.jquery-accordion-menu ul ul.submenu li:hover > a {
-  border-left-color: #222;
 }
 </style>

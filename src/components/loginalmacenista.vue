@@ -2,90 +2,127 @@
   <div class="container-fluid">
     <br />
     <div class="container">
-      <div class="row">
-        <div class="col-6">
-          <div class="login-wrap"></div>
+      <div class="login-wrap"></div>
+
+      <div class="d-flex justify-content-center">
+        <div class="brand_logo_container">
+          <img
+            src="../assets/perfiles/almacenista.jpg"
+            class="brand_logo"
+            alt="Logo"
+          />
         </div>
-        <div class="col-6">
-          <div class="login-html">
-            <input
-              id="tab-1"
-              type="radio"
-              name="tab"
-              class="sign-in"
-              checked
-            /><label for="tab-1" class="tab">Sign In</label>
-            <input id="tab-2" type="radio" name="tab" class="for-pwd" /><label
-              for="tab-2"
-              class="tab"
-              >Forgot Password</label
-            >
-            <div class="login-form">
-              <div class="sign-in-htm">
-                <div class="group">
-                  <label for="user" class="label">Username or Email</label>
-                  <input id="user" type="text" class="input" />
-                </div>
-                <div class="group">
-                  <label for="pass" class="label">Password</label>
-                  <input
-                    id="pass"
-                    type="password"
-                    class="input"
-                    data-type="password"
-                  />
-                </div>
-                <div class="group">
-                  <input type="submit" class="button" value="Sign In" />
-                </div>
-                <div class="hr"></div>
-              </div>
-              <div class="for-pwd-htm">
-                <div class="group">
-                  <label for="user" class="label">Username or Email</label>
-                  <input id="user" type="text" class="input" />
-                </div>
-                <div class="group">
-                  <input type="submit" class="button" value="Reset Password" />
-                </div>
-                <div class="hr"></div>
-              </div>
+      </div>
+
+      <div class="login-html">
+        <input
+          id="tab-1"
+          type="radio"
+          name="tab"
+          class="sign-in"
+          checked
+        /><label for="tab-1" class="tab">almacenista</label>
+        <input id="tab-2" type="radio" name="tab" class="for-pwd" /><label
+          for="tab-2"
+          class="tab"
+        ></label>
+        <div class="login-form">
+          <div class="sign-in-htm">
+            <div class="group">
+              <label for="user" class="label">Usuario o Email</label>
+              <input v-model="usuario.user" id="user" type="text" class="input" />
             </div>
+            <div class="group">
+              <label for="pass" class="label">Contraseña</label>
+              <input
+                v-model="usuario.pass"
+                id="pass"
+                type="password"
+                class="input"
+                data-type="password"
+              />
+            </div>
+            <div class="group">
+              <input @click="entrar" type="submit" class="button" value="Entrar" />
+            </div>
+            <div></div>
           </div>
         </div>
       </div>
     </div>
-    <br>
-    <footer>
-      <span class="span2">Adsi Centro Agroturistico @2021</span>
-    </footer>
+
     <link rel="stylesheet" href="css/all.min.css" />
   </div>
 </template>
 <script>
+import axios from 'axios'
 export default {
-  name: "login",
-  props: {
-    login: String,
+  name: "loginalmacenista",
+  data() {
+    return {
+      usuario:{
+        "user":null,
+        "pass":null,
+
+      }
+    }
   },
-};
-</script>
-<script>
-export default {
-  name: "roles",
   props: {
-    roles: String,
+    loginalmacenista: String,
   },
+  methods:{
+    entrar(){
+      const me=this;
+      axios.post(`user/login`,{
+        "email":me.usuario.user,
+        "password":me.usuario.pass
+
+      })
+      .then(function(response){
+        //const payload={nombre:rta.usuario.nombre,email:rta.usuario.email,rol:rta.usuario.rol};
+        me.$store.dispatch('setToken',response.data);
+        //me.$store.dispatch('setUsuario',payload);
+        me.$router.push("/menu");
+      })
+      .catch(function({response}){
+        console.log(response.data.msg)
+      })
+        
+    
+    }
+  }
 };
 </script>
 <style>
+/*imagenlogo*/
+.brand_logo_container {
+  position: absolute;
+  margin-top: 80px;
+  margin-right: 2000px;
+  height: 300px;
+  width: 300px;
+}
+.brand_logo_container {
+  position: absolute;
+  height: 450px;
+  width: 450px;
+
+  border-radius: 100%;
+  background: gray;
+  padding: 25px;
+  text-align: center;
+}
+.brand_logo {
+  height: 400px;
+  width: 400px;
+  border-radius: 50%;
+}
+
 /*Roles */
 body {
   margin: 0;
   color: #edf3ff;
   background: #c8c8c8;
-  background: url(https://hdqwalls.com/download/material-design-4k-2048x1152.jpg)
-    fixed;
   background-size: cover;
   font: 600 16px/18px "Open Sans", sans-serif;
 }
@@ -108,26 +145,30 @@ a {
 }
 
 .login-wrap {
+  overflow: hidden;
+  float: left;
   width: 100%;
   margin: auto;
-  max-width: 510px;
-  min-height: 510px;
+  max-width: 1300px;
+  min-height: 590px;
   position: relative;
-  background: url(https://maxcdn.icons8.com/app/uploads/2016/03/material-1-1000x563.jpg)
+  background: url(https://image.freepik.com/foto-gratis/equipo-negocios-oficina-negro-sobre-fondo-negro_1387-732.jpg)
     no-repeat center;
   background-size: cover;
-  box-shadow: 0 12px 15px 0 rgba(0, 0, 0, 0.24),
-    0 17px 50px 0 rgba(0, 0, 0, 0.19);
+}
+.v-main{
+    position: relative;
+  background-color: grey;
+  background-size: cover;
 }
 .login-html {
-  width: 100%;
-  height: 100%;
   position: absolute;
-  padding: 90px 70px 50px 70px;
+  top:80px;
+  right:220px;
+  padding: 20px 70px 50px 70px;
   background: rgba(0, 0, 0, 0.5);
 }
-.login-html .sign-in-htm,
-.login-html .for-pwd-htm {
+.login-html .sign-in-htm {
   top: 0;
   left: 0;
   right: 0;
@@ -151,12 +192,11 @@ a {
   text-transform: uppercase;
 }
 .login-html .tab {
-  font-size: 22px;
+  font-size: 35px;
   margin-right: 15px;
   padding-bottom: 5px;
-  margin: 0 15px 10px 0;
+  margin: 20px 10px 20px 80px;
   display: inline-block;
-  border-bottom: 2px solid transparent;
 }
 .login-html .sign-in:checked + .tab,
 .login-html .for-pwd:checked + .tab {
@@ -189,7 +229,7 @@ a {
   background: rgba(255, 255, 255, 0.1);
 }
 .login-form .group input[data-type="password"] {
-  text-security: circle;
+  -text-security: circle;
   -webkit-text-security: circle;
 }
 .login-form .group .label {
@@ -258,13 +298,8 @@ a {
   -webkit-transform: rotate(0);
   transform: rotate(0);
 }
-
-.hr {
-  height: 2px;
-  margin: 60px 0 50px 0;
-  background: rgba(255, 255, 255, 0.2);
-}
 .foot-lnk {
   text-align: center;
 }
 </style>
+
