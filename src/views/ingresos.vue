@@ -292,7 +292,7 @@
               </v-card>
             </v-col>
             <v-col>
-              <v-text-field v-model="f" label="Total"></v-text-field>
+              <v-text-field v-model="g" label="Total"></v-text-field>
               <v-card class="pa-2" outlined tile>
                 <v-btn @click="guardar()"> Agregar </v-btn>
               </v-card>
@@ -519,13 +519,13 @@ export default {
           .post(
             "compr",
             {
-              usuario: this.editedItem.usuario.nombre,
-              persona: this.editedItem.persona.nombre,
-              tipoComprobante: this.editedItem.tipoComprobante,
-              serieComprobante: this.editedItem.serieComprobante,
-              numComprobante: this.editedItem.numComprobante,
-              impuesto: this.editedItem.impuesto,
-              total: this.editedItem.total,
+              usuario: this.a,
+              persona: this.b,
+              tipoComprobante: this.c,
+              serieComprobante: this.d,
+              numComprobante: this.e,
+              impuesto: this.f,
+              total: this.g,
               detalles: this.detallados,
               estado: this.editedItem.estado,
             },
