@@ -279,7 +279,7 @@ export default {
           .post(
             "artic",
             {
-              categoria: this.editedItem.categoria.nombre,
+              categoria: this.editedItem.categoria,
               codigo: this.editedItem.codigo,
               nombre: this.editedItem.nombre,
               descripcion: this.editedItem.descripcion,
@@ -292,7 +292,7 @@ export default {
           .then((response) => {
             console.log(response.data);
             me.listarArticulos();
-            this.editedItem.categoria.nombre = "";
+            this.editedItem.categoria = "";
             this.editedItem.codigo = "";
             this.editedItem.nombre = "";
             this.editedItem.descripcion = "";

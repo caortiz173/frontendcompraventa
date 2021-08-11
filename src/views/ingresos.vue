@@ -1,21 +1,12 @@
 <template>
-  <div>
-    <div>
+<div>
+      <div>
       <v-toolbar app class="black">
         <v-btn class="ma-2" color="primary" dark @click="atras">
           <v-icon dark left> mdi-arrow-left </v-icon>Atrás
         </v-btn>
 
         <v-spacer></v-spacer>
-
-        <v-text-field
-          dark
-          v-model="search"
-          prepend-icon="mdi-magnify"
-          label="Búsqueda"
-          single-line
-          hide-details
-        ></v-text-field>
 
         <v-spacer></v-spacer>
         <v-badge bordered color="error" icon="mdi-lock" overlap>
@@ -25,565 +16,439 @@
         </v-badge>
       </v-toolbar>
     </div>
-
-    <br /><br />
-    <div class="container">
-      <template v-if="tabla2 == 0">
-        <v-data-table
-          :headers="headers"
-          :items="compr"
-          :search="search"
-          sort-by="calories"
-          class="elevation-1"
+    
+    <div>
+      <v-layout align-start>
+    <v-flex>
+      <v-toolbar flat color="white">
+        <v-toolbar-title>Compras</v-toolbar-title>
+        <v-divider class="mx-2" inset vertical></v-divider>
+        <v-spacer></v-spacer>
+        <v-text-field
+          v-if="verNuevo == 0"
+          class="text-xs-center"
+          v-model="search"
+          append-icon="mdi-magnify"
+          label="Búsqueda"
+          single-line
+          hide-details
+        ></v-text-field>
+        <v-spacer></v-spacer>
+        <v-btn
+          color="primary"
+          v-if="verNuevo == 0"
+          @click="mostrarNuevo()"
+          dark
+          class="mb-2"
+          >Nuevo</v-btn
         >
-          <template v-slot:top>
-            <v-toolbar flat>
-              <v-toolbar-title>Compras</v-toolbar-title>
-              <v-divider class="mx-4" inset vertical></v-divider>
-              <v-btn @click="imprimir()"><v-icon>mdi-printer</v-icon></v-btn>
+        <v-dialog v-model="dialog" max-width="1000px">
+          <v-card>
+            <v-card-title>
+              <span class="headline">Seleccione un artículo</span>
+            </v-card-title>
+            <v-card-text>
+              <v-container grid-list-md>
+                <v-layout wrap>
+                  <v-flex xs12 sm12 md12 lg12 xl12>
+                    <v-text-field
+                      v-model="texto"
+                      @keyup.enter="listarArticulos()"
+                      class="text-xs-center"
+                      append-icon="mdi-magnify"
+                      label="Búsqueda"
+                    ></v-text-field>
+                    <template class="container">
+
+
+                      <!-- SUB MENU PARA INGRESAR ARTICULOS -->
+                      <v-data-table
+                        :headers="cabeceraArticulos"
+                        :items="artic"
+                        class="elevation-1"
+                      >
+                        <template v-slot:[`item.seleccionar`]="{ item }">
+                          <template v-if="item.estado">
+                            <v-icon 
+                            small
+                             @click="agregarDetalle(item)">
+                              mdi-plus
+                            </v-icon>
+                          </template>
+                        </template>
+                        <template v-slot:[`item.estado`]="{ item }">
+                          <div v-if="item.estado">
+                            <span class="blue--text">Activo</span>
+                          </div>
+                          <div v-else>
+                            <span class="red--text">Inactivo</span>
+                          </div>
+                        </template>
+                      </v-data-table>
+                      <!-- FINAL DEL SUB MENU  -->
+
+
+                    </template>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-card-text>
+            <v-card-actions>
               <v-spacer></v-spacer>
-              <v-dialog v-model="dialog" persistent max-width="500px">
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                    color="primary"
-                    dark
-                    class="mb-2"
-                    v-bind="attrs"
-                    v-on="on"
-                    @click="nuevoIngreso"
-                  >
-                    Nuevo
-                  </v-btn>
-                </template>
-                <v-card>
-                  <v-card-title>
-                    <span class="headline">Compras</span>
-                  </v-card-title>
+              <v-btn 
+              color="primary"
+              flat
+              @click="close">
+              Cancelar
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
 
-                  <v-card-text>
-                    <!-- Es la tabla principal de compras y debe estar en cero -->
-                    <v-container>
-                      <v-row>
-                        <v-col cols="12" sm="6" md="4">
-                          <v-text-field
-                            v-model="editedItem.usuario"
-                            label="Usuario"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="4">
-                          <v-text-field
-                            v-model="editedItem.persona"
-                            label="Persona"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="4">
-                          <v-text-field
-                            v-model="editedItem.tipoComprobante"
-                            label="TipoComprobante"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="4">
-                          <v-text-field
-                            v-model="editedItem.serieComprobante"
-                            label="SerieComprobante"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="4">
-                          <v-text-field
-                            v-model="editedItem.numComprobante"
-                            label="NumComprobante"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="4">
-                          <v-text-field
-                            v-model="editedItem.impuesto"
-                            label="Impuesto"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="4">
-                          <v-text-field
-                            v-model="editedItem.total"
-                            label="Total"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="4">
-                          <v-text-field
-                            v-model="detallados._id"
-                            label="Detalle_id"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="4">
-                          <v-text-field
-                            v-model="detallados.articulo"
-                            label="D:articulo"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="4">
-                          <v-text-field
-                            v-model="detallados.cantidad"
-                            label="D:Cantidad"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="4">
-                          <v-text-field
-                            v-model="detallados.precio"
-                            label="D:precio"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="4">
-                          <v-text-field
-                            v-model="detallados.subtotal"
-                            label="D:subtotal"
-                          ></v-text-field>
-                        </v-col>
-
-                        <v-col cols="12" sm="6" md="4">
-                          <v-text-field
-                            v-model="editedItem.estado"
-                            label="Estado"
-                          ></v-text-field>
-                        </v-col>
-                      </v-row>
-                    </v-container>
-                  </v-card-text>
-
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" text @click="dialog = false">
-                      Cancelar
-                    </v-btn>
-                    <v-btn color="blue darken-1" @click="guardar()" text>
-                      Agregar
-                    </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
-
-              <v-dialog v-model="Modal" max-width="290">
-                <v-card>
-                  <v-card-title class="headline" v-if="Accion == 1">
-                    Activar Item
-                  </v-card-title>
-                  <v-card-title class="headline" v-if="Accion == 2">
-                    Desactivar Item
-                  </v-card-title>
-                  <v-card-text>
-                    Estás a punto de <span v-if="Accion == 1">activar </span>
-                    <span v-if="Accion == 2">desactivar </span> el item
-                    {{ Nombre }}
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn
-                      @click="activarDesactivarCerrar()"
-                      color="primary"
-                      flat="flat"
-                    >
-                      Cancelar
-                    </v-btn>
-                    <v-btn
-                      v-if="Accion == 1"
-                      @click="activar()"
-                      color="primary"
-                      flat="flat"
-                    >
-                      Activar
-                    </v-btn>
-                    <v-btn
-                      v-if="Accion == 2"
-                      @click="desactivar()"
-                      color="primary"
-                      flat="flat"
-                    >
-                      Desactivar
-                    </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
-
-              <v-dialog v-model="dialogDelete" max-width="500px">
-                <v-card>
-                  <v-card-title class="headline"
-                    >Are you sure you want to delete this item?</v-card-title
-                  >
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" text @click="closeDelete"
-                      >Cancel</v-btn
-                    >
-                    <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-                      >OK</v-btn
-                    >
-                    <v-spacer></v-spacer>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
-            </v-toolbar>
-          </template>
-          <template v-slot:[`item.opciones`]="{ item }">
-            <v-icon color="primary" small class="mr-2" @click="editItem(item)">
-              mdi-pencil
+        <!-- INICIO DE ACTIVAR Y DESACTIVAR  -->
+        <v-dialog v-model="Modal" max-width="290">
+          <v-card>
+            <v-card-title class="headline" v-if="Accion == 1">
+              Activar Item
+            </v-card-title>
+            <v-card-title class="headline" v-if="Accion == 2">
+              Desactivar Item
+            </v-card-title>
+            <v-card-text>
+              Estás a punto de <span v-if="Accion == 1">activar </span>
+              <span v-if="Accion == 2">desactivar </span> el item
+              {{ Nombre }}
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                @click="activarDesactivarCerrar()"
+                color="primary"
+                flat="flat"
+              >
+                Cancelar
+              </v-btn>
+              <v-btn
+                v-if="Accion == 1"
+                @click="activar()"
+                color="primary"
+                flat="flat"
+              >
+                Activar
+              </v-btn>
+              <v-btn
+                v-if="Accion == 2"
+                @click="desactivar()"
+                color="primary"
+                flat="flat"
+              >
+                Desactivar
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <!-- FINAL DE ACTIVAR Y DESACTIVAR  -->
+      </v-toolbar>
+      <v-data-table
+        :headers="headers"
+        :items="compr"
+        class="elevation-1"
+        v-if="verNuevo == 0"
+      >
+      <!-- INICIO DE BOTONES DE TABLAS  -->
+        <template v-slot:[`item.opciones`]="{ item }">
+          <template v-if="item.estado">
+            <v-icon small @click="activarDesactivarMostrar(2, item)">
+              mdi-server-network
             </v-icon>
-
-            <template v-if="item.estado">
-              <v-icon small @click="activarDesactivarMostrar(2, item)">
-                mdi-block-helper
-              </v-icon>
-            </template>
-            <template v-else>
-              <v-icon small @click="activarDesactivarMostrar(1, item)">
-                mdi-check
-              </v-icon>
-            </template>
           </template>
-
-          <template v-slot:[`item.estado`]="{ item }">
-            <div v-if="item.estado">
-              <span class="green--text">Activo</span>
-            </div>
-            <div v-else>
-              <span class="red--text">Inactivo</span>
-            </div>
+          <template v-else>
+            <v-icon small @click="activarDesactivarMostrar(1, item)">
+              mdi-server-off
+            </v-icon>
           </template>
+          <!-- FIN DE BOTONES DE TABLAS -->
+          
+        </template>
+        <template v-slot:[`item.estado`]="{ item }">
+          <div v-if="item.estado">
+            <span class="blue--text">Activo</span>
+          </div>
+          <div v-else>  
+            <span class="red--text">Inactivo</span>
+          </div>
+        </template>
+       <template v-slot:no-data>
+          <v-btn color="primary" @click="listar()">Actualizar</v-btn>
+        </template>
+      </v-data-table>
+      <v-container grid-list-sm class="pa-4 white" v-if="verNuevo">
+        <v-layout row wrap>
+          <v-flex xs12 sm4 md4 lg4 xl4>
+            <v-select
+              v-model="tipoComprobante"
+              :items="comprobantes"
+              label="Tipo Comprobante"
+            >
+            </v-select>
+          </v-flex>
+          <v-flex xs12 sm4 md4 lg4 xl4>
+            <v-text-field 
+            v-model="serieComprobante" 
+            label="Serie Comprobante">
+            </v-text-field>
+          </v-flex>
+          <v-flex xs12 sm4 md4 lg4 xl4>
+            <v-text-field 
+            v-model="numComprobante" 
+            label="Número Comprobante">
+            </v-text-field>
+          </v-flex>
+          <v-flex xs12 sm4 md4 lg4 xl4>
+            <v-select  
+            :items="pers" 
+            v-model="persona"
+             label="Cliente">
+            </v-select>
 
-          <template v-slot:no-data>
-            <v-btn color="primary" @click="initialize"> Reset </v-btn>
-          </template>
-        </v-data-table>
-      </template>
+          </v-flex>
+          <v-flex xs12 sm4 md4 lg4 xl4>
+            <v-text-field 
+            type="number" 
+            v-model="impuesto" 
+            label="Impuesto">
+            </v-text-field>
+          </v-flex>
+          <v-flex xs12 sm8 md8 lg8 x8>
+            <v-text-field
+              v-model="codigo"
+              label="Código"
+              @keyup.enter="buscarCodigo()"
+            >
+            </v-text-field>
+          </v-flex>
+          <v-flex xs12 sm2 md2 lg2 xl2>
+            <!-- BOTON PARA AGREGAR ARTICULO  -->
 
-      <!--       Segunda tabla: mostrar información detalles -->
+            <v-btn 
+            small 
+            fab
+             dark 
+             color="primary" 
+             @click="mostrarModalArticulos()">
+              <v-icon dark>mdi-plus</v-icon>
+            </v-btn>
+          </v-flex>
+          <!-- FIN DE BOTON PARA AGREGAR ARTICULO  -->
+          <v-flex xs12 sm2 md2 lg2 xl2 v-show="errorArticulo">
+            <div class="red--text" v-text="errorArticulo"></div>
+          </v-flex>
+          <v-flex xs12 sm12 md12 lg12 xl12>
 
-      <template v-if="tabla2 == 1">
-        <v-card class="mx-auto" max-width="1300">
-          <v-row>
-            <v-col>
-              <v-card class="pa-2" outlined tile>
-                <v-text-field v-model="a" label="Nombre_usuario"></v-text-field>
-
-                <v-text-field
-                  v-model="b"
-                  label="Nombre_Proveedor"
-                ></v-text-field>
-              </v-card>
-            </v-col>
-
-            <v-col>
-              <v-card class="pa-2" outlined tile>
-                <v-text-field
-                  v-model="c"
-                  label="Tipo de Comprobante"
-                ></v-text-field>
-
-                <v-text-field
-                  v-model="d"
-                  label="Serie de Comprobante "
-                ></v-text-field>
-              </v-card>
-            </v-col>
-
-            <v-col>
-              <v-card class="pa-2" outlined tile>
-                <v-text-field
-                  v-model="e"
-                  label="Número de Comprobante"
-                ></v-text-field>
-                <v-text-field v-model="f" label="Impuesto"></v-text-field>
-              </v-card>
-            </v-col>
-            <v-col>
-              <v-text-field v-model="g" label="Total"></v-text-field>
-              <v-card class="pa-2" outlined tile>
-                <v-btn @click="guardar()"> Agregar </v-btn>
-              </v-card>
-            </v-col>
-          </v-row>
-        </v-card>
-
-        <v-data-table
-          :headers="headerIngresos"
-          :items="detalles"
-          :search="buscar"
-        >
-          <template v-slot:top>
-            <v-toolbar flat>
-              <v-toolbar-title>Detalles de Ingresos</v-toolbar-title>
-
-              <v-divider class="mx-4" inset vertical></v-divider>
-
-              <v-btn @click="imprimir()"><v-icon>mdi-printer</v-icon></v-btn>
-              <v-spacer></v-spacer>
-              <v-dialog v-model="dialog" persistent max-width="500px">
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                    color="primary"
-                    dark
-                    class="mb-2"
-                    v-bind="attrs"
-                    v-on="on"
-                  >
-                    Guardar_detalle
-                  </v-btn>
+            <!-- INICIO PARA AGREGAR ARTICULOS  -->
+            <template>
+              <v-data-table
+                :headers="cabeceraDetalles"
+                :items="detalles"
+                hide-actions
+                class="elevation-1"
+              >
+                <template v-slot:[`item.borrar`]="{ item }">
+                  <template>
+                    <v-icon small @click="eliminarDetalle(detalles, item)">
+                      mdi-delete
+                    </v-icon>
+                  </template>
+                </template>
+                <template v-slot:[`item.cantidad`]="{ item }">
+                  <template>
+                    <v-text-field
+                      v-model="item.cantidad"
+                      type="number"
+                    ></v-text-field>
+                  </template>
+                </template>
+                <template v-slot:[`item.subtotal`]="{ item }">
+                  <template>
+                    <v-text
+                      v-text="item.precio * item.cantidad"
+                    ></v-text>
+                  </template>
                 </template>
 
-                <template>
-                  <div></div>
+                <template slot="no-data">
+                  <h3>No hay artículos agregados al detalle.</h3>
                 </template>
-                <v-btn color="primary" dark class="mb-2" v-if="tabla2 == 0">
-                  salir
-                </v-btn>
+              </v-data-table>
+              <!-- FIN PARA AGREGAR ARTICULOS  -->
 
-                <v-card @click="on">
-                  <v-card-title>
-                    <span class="headline">Compras</span>
-                  </v-card-title>
+              <v-flex class="text-xs-right">
+                <strong>Total Parcial:</strong> $
+                {{ (totalParcial = (total - totalImpuesto).toFixed(2)) }}
+              </v-flex>
+              <v-flex class="text-xs-right">
+                <strong>Total Impuesto:</strong> $
+                {{
+                  (totalImpuesto = (
+                    (total * impuesto) /
+                    (1 + impuesto)
+                  ).toFixed(2))
+                }}
+              </v-flex>
+              <v-flex class="text-xs-right">
+                <strong>Total Neto:</strong> $ {{ (total = calcularTotal) }}
+              </v-flex>
+            </template>
 
-                  <v-card-text>
-                    <v-container>
-                      <v-row>
-                        <v-col cols="12" sm="6" md="4">
-                          <v-text-field
-                            v-model="detallados._id"
-                            label="ID"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="4">
-                          <v-text-field
-                            v-model="detallados.articulo"
-                            label="Articulo"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="4">
-                          <v-text-field
-                            v-model="detallados.cantidad"
-                            label="Cantidad"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="4">
-                          <v-text-field
-                            v-model="detallados.precio"
-                            label="Precio"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="4">
-                          <v-text-field
-                            v-model="detallados.subtotal"
-                            label="Subtotal"
-                          ></v-text-field>
-                        </v-col>
-                      </v-row>
-                    </v-container>
-                  </v-card-text>
-
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" text @click="dialog = false">
-                      Cancelar
-                    </v-btn>
-                    <v-btn
-                      color="blue darken-1"
-                      text
-                      @click="agregarDetalle(data)"
-                    >
-                      Guardar
-                    </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
-
-              <v-dialog v-model="dialogDelete" max-width="500px">
-                <v-card>
-                  <v-card-title class="headline"
-                    >Are you sure you want to delete this item?</v-card-title
-                  >
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" text @click="closeDelete"
-                      >Cancel</v-btn
-                    >
-                    <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-                      >OK</v-btn
-                    >
-                    <v-spacer></v-spacer>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
-            </v-toolbar>
-          </template>
-
-          <template v-slot:[`item.subtotal`]="{ item }">
-            <span>
-              {{ item.precio * item.cantidad }}
-            </span>
-          </template>
-          <v-btn
-            v-if="tabla == 1"
-            color="blue darken-1"
-            flat
-            @click.native="ocultarNuevo()"
-            >Cancelar</v-btn
-          >
-        </v-data-table>
-      </template>
+            <!-- FIN DE CABECERA DE DETALLES  -->
+          </v-flex>
+          <v-flex xs12 sm12 md12 v-show="valida">
+            <div
+              class="red--text"
+              v-for="v in validaMensaje"
+              :key="v"
+              v-text="v"
+            ></div>
+          </v-flex>
+          <v-flex xs12 sm12 md12 lg12 xl12>
+            <v-btn color="primary" flat @click.native="ocultarNuevo()"
+              >Cancelar</v-btn
+            >
+            <v-btn
+              color="primary"
+              v-if="verDetalle == 0"
+              @click.native="guardar()"
+              >Guardar</v-btn
+            >
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-flex>
+  </v-layout>
     </div>
-  </div>
+</div>
+
+  
 </template>
 <script>
 import axios from "axios";
 import Swal from "sweetalert2";
-import jsPDF from "jspdf";
-import "jspdf-autotable";
 export default {
-  name: "compras",
-  components: {},
   data() {
     return {
-      a: "",
-      b: "",
-      c: "",
-      d: "",
-      e: "",
-      f: "",
-      g:"",
+      dialog: false,
       search: "",
       compr: [],
-      detalles: [],
-      zb: 0,
-      tabla2: 0,
-      dialog: false,
       headers: [
-        {
-          text: "Usuario",
-          align: "start",
-          sortable: false,
-          value: "usuario.nombre",
-        },
-        { text: "Proveedor", value: "persona.nombre" },
-        { text: "TipoComprobante", value: "tipoComprobante" },
-        { text: "SerieComprobante", value: "serieComprobante" },
-        { text: "NumComprobante", value: "numComprobante" },
-        { text: "Impuesto", value: "impuesto" },
-        { text: "Total", value: "total" },
-        { text: "Estado", value: "estado" },
-        { text: "Opciones", value: "opciones" },
+        { text: "Usuario", value: "usuario.nombre", sortable: false },
+        { text: "Cliente", value: "persona.nombre", sortable: true },
+        { text: "Tipo Comprobante", value: "tipoComprobante", sortable: true },
+        {text: "Serie comprobante", value: "serieComprobante", sortable: false},
+        {text: "Número comprobante",value: "numComprobante",sortable: false},
+        { text: "Fecha", value: "createdAt", sortable: false },
+        { text: "Impuesto", value: "impuesto", sortable: false },
+        { text: "Total", value: "total", sortable: false },
+        { text: "Estado", value: "estado", sortable: false },
+        { text: "Opciones", value: "opciones", sortable: false },
       ],
-      headerIngresos: [
-        { text: "ID", value: "_id", sortable: false },
-        { text: "Articulo", value: "articulo", sortable: false },
-        { text: "cantidad", value: "cantidad", sortable: false },
+      id: "",
+      persona: "",
+      pers: [],
+      tipoComprobante: "",
+      comprobantes: ["NOTA DEBITO", "FACTURA", "NOTA CREDITO"],
+      serieComprobante: "",
+      numComprobante: "",
+      impuesto: 0.19,
+      codigo: "",
+      cabeceraDetalles: [
+        { text: "Borrar", value: "borrar", sortable: false },
+        { text: "Artículo", value: "articulo", sortable: false },
+        { text: "Cantidad", value: "cantidad", sortable: false },
         { text: "Precio", value: "precio", sortable: false },
-        { text: "Subtotal", value: "subtotal", sortable: false },
+        { text: "Sub Total", value: "subtotal", sortable: false },
       ],
-      editedItem: {
-        usuario: "",
-        persona: "",
-        tipoComprobante: "",
-        serieComprobante: "",
-        numComprobante: "",
-        impuesto: "",
-        total: "",
-        estado: 0,
-      },
-      detallados: {
-        _id: 0,
-        articulo: "",
-        cantidad: 0,
-        precio: 0,
-        subtotal: 0,
-      },
+      detalles: [],
+      verNuevo: 0,
+      errorArticulo: null,
+      total: 0,
+      totalParcial: 0,
+      totalImpuesto: 0,
+      texto: "",
+      artic: [],
+      cabeceraArticulos:[
+        { text: "Seleccionar", value: "seleccionar", sortable: false },
+        { text: "Código", value: "codigo", sortable: false },
+        { text: "Nombre", value: "nombre", sortable: true },
+        { text: "Categoría", value: "categoria.nombre", sortable: true },
+        { text: "Stock", value: "stock", sortable: false },
+        { text: "Precio Venta", value: "precioventa", sortable: false },
+        { text: "Descripción", value: "descripcion", sortable: false },
+        { text: "Estado", value: "estado", sortable: false },
+      ],
+      verDetalle: 0,
+      valida: 0,
+      validaMensaje: [],
+      Modal: 0,
+      Accion: 0,
+      Nombre: "",
+      Id: "",
+      fecha: null,
     };
   },
-
+  computed: {
+    calcularTotal: function () {
+      let resultado = 0.0;
+      for (var i = 0; i < this.detalles.length; i++) {
+        resultado =
+          resultado +
+          this.detalles[i].cantidad * this.detalles[i].precio
+      }
+      return resultado;
+    },
+  },
+  watch: {
+    dialog(val) {
+      val || this.close();
+    },
+  },
   created() {
-    this.listarCompras();
+    this.listar();
+    this.selectPersona();
   },
   methods: {
-    listarCompras() {
-      let header = { headers: { token: this.$store.state.token } };
+    selectPersona() {
+      let me = this;
+      let personaArray = [];
+      let header = { headers: { "token": this.$store.state.token } };
       axios
-        .get("compr", header)
-        .then((response) => {
-          console.log(response.data.compr);
-          this.compr = response.data.compra;
+        .get("pers", header)
+        .then(function (response) {
+          personaArray = response.data.persona;
+          console.log(response.data);
+          personaArray.map(function (x) {
+            me.pers.push({ text: x.nombre, value: x._id });
+          });
         })
-        .catch((error) => {
-          console.log(error.response);
+        .catch(function (error) {
+          console.log(error);
         });
     },
-    guardar() {
-      if (this.zb == 0) {
-        console.log("Estoy guardando", this.zb);
-        const me = this;
-        let header = { headers: { token: this.$store.state.token } };
-        axios
-          .post(
-            "compr",
-            {
-              usuario: this.a,
-              persona: this.b,
-              tipoComprobante: this.c,
-              serieComprobante: this.d,
-              numComprobante: this.e,
-              impuesto: this.f,
-              total: this.g,
-              detalles: this.detallados,
-              estado: this.editedItem.estado,
-            },
-            header
-          )
-          .then((response) => {
-            console.log(response.data);
-            me.listarCompras();
-            this.editedItem.usuario.nombre = "";
-            this.editedItem.persona.nombre = "";
-            this.editedItem.tipoComprobante = "";
-            this.editedItem.serieComprobante = "";
-            this.editedItem.numComprobante = "";
-            this.editedItem.impuesto = "";
-            this.detallados._id = "";
-            this.detallados.detalles = "";
-            this.editedItem.estado = "";
-            // this.$router.push("/categorias")
-            this.dialog = false;
-          })
-          .catch((error) => {
-            console.log(error.response);
-          });
-      } else {
-        console.log("Estoy editando" + this.zb + " id " + this.id);
-        let header = { headers: { token: this.$store.state.token } };
-        const me = this;
-        axios
-          .put(
-            `compr/${me.id}`,
-            {
-              usuario: this.editedItem.usuario,
-              persona: this.editedItem.persona,
-              tipoComprobante: this.editedItem.tipoComprobante,
-              serieComprobante: this.editedItem.serieComprobante,
-              numComprobante: this.editedItem.numComprobante,
-              impuesto: this.editedItem.impuesto,
-              total: this.editedItem.total,
-              detalles: this.editedItem.detalles,
-            },
-            header
-          )
-          .then((response) => {
-            console.log(response.data);
-            me.listarCompras();
-            this.editedItem.usuario.nombre = "";
-            this.editedItem.persona.nombre = "";
-            this.editedItem.tipoComprobante = "";
-            this.editedItem.serieComprobante = "";
-            this.editedItem.numComprobante = "";
-            this.editedItem.impuesto = "";
-            this.editedItem.detalles = "";
-            this.editedItem.estado = "";
-          })
-          .catch(function (error) {
-            console.log(error.data);
-          });
-      }
+    listarArticulos() {
+      let me = this;
+      let header = { headers: { "token": this.$store.state.token } };
+      axios
+        .get("artic", header)
+        .then(function (response) {
+          console.log(response.data.artic);
+          me.artic= response.data.articulo;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+    mostrarModalArticulos() {
+      this.dialog = 1;
+      this.listarArticulos()
     },
     agregarDetalle(data) {
       console.log(data);
@@ -592,122 +457,139 @@ export default {
         this.errorArticulo = "El artículo ya ha sido agregado.";
       } else {
         this.detalles.push({
-          _id: data.detallados._id,
-          articulo: data.detallados.articulo,
-          cantidad: data.detallados.cantidad,
-          precio: data.detallados.precio,
+          _id: data._id,
+          articulo: data.nombre,
+          cantidad: 1,
+          precio: data.precioventa,
         });
         this.codigo = "";
       }
     },
-    editItem(item) {
-      this.zb = 1;
-      console.log(item._id);
-      this.tabla2 = 1;
-      this.listarDetalles(item._id);
-      this.a = item.usuario.nombre;
-      this.b = item.persona.nombre;
-      this.c = item.tipoComprobante;
-      this.d = item.serieComprobante;
-      this.e = item.numComprobante;
-      this.f = item.impuesto;
-      this.g = item.total
+    encuentra(id) {
+      let sw = 0;
+      for (var i = 0; i < this.detalles.length; i++) {
+        if (this.detalles[i]._id == id) {
+          sw = true;
+        }
+      }
+      return sw;
     },
-    nuevoIngreso() {
-      this.tabla2 = 1;
-      this.zb = 0;
-      console.log(this.tabla2);
+    eliminarDetalle(arr, item) {
+      console.log(arr, "   /   ", item);
+      let i = arr.indexOf(item);
+      if (i != -1) {
+        arr.splice(i, 1);
+      }
     },
+    
     listarDetalles(id) {
-      this.zb = 1;
       let me = this;
-      let header = { headers: { token: this.$store.state.token } };
+      let header = { headers: { "token": this.$store.state.token } };
       axios
         .get(`compr/${id}`, header)
         .then(function (response) {
-          // me.detalles = response.data;
-          // console.log(response.data);
+          console.log(response.data.detalles)
           me.detalles = response.data.compra.detalles;
-          console.log(response.data.compr.detalles);
         })
         .catch(function (error) {
           console.log(error);
+        });
+    },
+    listar() {
+      let me = this;
+      let header = { headers: { "token": this.$store.state.token } };
+      axios
+        .get("compr", header)
+        .then(function (response) {
+          console.log(response.data.compr)
+          me.compr = response.data.compra;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+    limpiar() {
+      this.id = "";
+      this.tipoComprobante = "";
+      this.serieComprobante = "";
+      this.numComprobante = "";
+      this.impuesto = 0.18;
+      this.codigo = "";
+      this.total = 0;
+      this.totalParcial = 0;
+      this.totalImpuesto = 0;
+      this.detalles = [];
+      this.verNuevo = 0;
+      this.valida = 0;
+      this.validaMensaje = [];
+      this.verDetalle = 0;
+    },
+    validar() {
+      this.valida = 0;
+      this.validaMensaje = [];
+      if (!this.persona) {
+        this.validaMensaje.push("Seleccione un Cliente.");
+      }
+      if (!this.numComprobante) {
+        this.validaMensaje.push("Ingrese el número del comprobante.");
+      }
+      if (this.validaMensaje.length) {
+        this.valida = 1;
+      }
+      return this.valida;
+    },
+    mostrarNuevo() {
+      this.selectPersona();
+      this.verNuevo = 1;
+    },
+    ocultarNuevo() {
+      this.verNuevo = 0;
+      this.limpiar();
+    },
+    guardar() {
+      let me = this;
+      let header = { headers: { "token": this.$store.state.token } };
+      if (this.validar()) {
+        return;
+      }
+      //Código para guardar
+      axios
+        .post(
+          "compr",
+          {
+            persona: this.persona,
+            usuario: this.$store.state.usuario._id,
+            tipoComprobante: this.tipoComprobante,
+            serieComprobante: this.serieComprobante,
+            numComprobante: this.numComprobante,
+            impuesto: this.impuesto,
+            total: this.total,
+            detalles: this.detalles,
+          },
+          header
+        )
+        .then(function () {
+          me.limpiar();
+          me.close();
+          me.listar();
+        })
+        .catch(function (error) {
+          console.log(error.response);
         });
     },
     activarDesactivarMostrar(accion, item) {
-      let id = item._id;
-      console.log(accion);
-      if (accion == 2) {
-        console.log(id);
-        let me = this;
-        let header = { headers: { token: this.$store.state.token } };
-        axios
-          .put(
-            `compr/desactivar/${id}`,
-            {
-              estado: 0,
-            },
-            header
-          )
-          .then(function () {
-            me.listarCompras();
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
-      } else if (accion == 1) {
-        console.log(id);
-        let me = this;
-        let header = { headers: { token: this.$store.state.token } };
-        axios
-          .put(
-            `compr/activar/${id}`,
-            {
-              estado: 1,
-            },
-            header
-          )
-          .then(function () {
-            me.listarCompras();
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
+      this.Modal = 1;
+      this.Nombre = item.numComprobante;
+      this.Id = item._id;
+      if (accion == 1) {
+        this.Accion = 1;
+      } else if (accion == 2) {
+        this.Accion = 2;
+      } else {
+        this.Modal = 0;
       }
     },
-    activar() {
-      let me = this;
-      let header = { headers: { token: this.$store.state.token } };
-      axios
-        .put(`categoria/activar/${me.Id}`, {}, header)
-        .then(function () {
-          me.Modal = 0;
-          me.Accion = 0;
-          me.Nombre = "";
-          me.Id = "";
-          me.listar();
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    },
-    desactivar() {
-      let me = this;
-      let header = { headers: { token: this.$store.state.token } };
-      axios
-        .put(`categoria/desactivar/${me.Id}`, {}, header)
-        .then(function () {
-          me.Modal = 0;
-          me.Accion = 0;
-          me.Nombre = "";
-          me.Id = "";
-          me.listar();
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    },
-    atras() {
+     atras() {
       this.$router.push("/menu");
     },
     cerrar() {
@@ -722,42 +604,43 @@ export default {
       this.$store.dispatch("setToken", "");
       this.$router.push("/roles");
     },
-    imprimir() {
-      var columns = [
-        { title: "Usuario", dataKey: "usuario" },
-        { title: "Persona", dataKey: "persona" },
-        { title: "TipoComprobante", dataKey: "tipoComprobante" },
-        { title: "SerieComprobante", dataKey: "serieComprobante" },
-        { title: "NumComprobante", dataKey: "numComprobante" },
-        { title: "Impuesto", dataKey: "impuesto" },
-        { title: "total", dataKey: "total" },
-        { title: "Detalles", dataKey: "detalles" },
-        { title: "Estado", dataKey: "estado" },
-      ];
-      var rows = [];
-
-      this.compr.map(function (x) {
-        rows.push({
-          usuario: x.usuario,
-          persona: x.persona,
-          tipoComprobante: x.tipoComprobante,
-          serieComprobante: x.serieComprobante,
-          numComprobante: x.numComprobante,
-          impuesto: x.impuesto,
-          total: x.total,
-          detalles: x.detalles,
-          estado: x.estado,
+    activarDesactivarCerrar() {
+      this.Modal = 0;
+    },
+    activar() {
+      let me = this;
+      let header = { headers: { "token": this.$store.state.token } };
+      axios
+        .put(`compr/activar/${this.Id}`, {}, header)
+        .then(function () {
+          me.Modal = 0;
+          me.Accion = 0;
+          me.Nombre = "";
+          me.Id = "";
+          me.listar();
+        })
+        .catch(function (error) {
+          console.log(error);
         });
-      });
-      var doc = new jsPDF("p", "pt");
-      doc.autoTable(columns, rows, {
-        margin: { top: 60 },
-        addPageContent: function () {
-          doc.text("Lista de Ingresos", 40, 30);
-        },
-      });
-
-      doc.save("Ingresos.pdf");
+    },
+    desactivar() {
+      let me = this;
+      let header = { headers: { "token": this.$store.state.token } };
+      axios
+        .put(`compr/desactivar/${this.Id}`, {}, header)
+        .then(function () {
+          me.Modal = 0;
+          me.Accion = 0;
+          me.Nombre = "";
+          me.Id = "";
+          me.listar();
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+    close() {
+      this.dialog = false;
     },
   },
 };

@@ -16,7 +16,7 @@ import '@mdi/font/css/materialdesignicons.css'
 import Vuetify from 'vuetify/lib'
 Vue.use(Vuetify)
 import axios from 'axios'
-axios.defaults.baseURL='http://localhost:3000/api/'
+axios.defaults.baseURL='https://tienda-2021.herokuapp.com/api/'
 //axios.defaults.baseURL='https://gigat-backend-base.herokuapp.com/api/'
 import 'bootstrap/dist/css/bootstrap.css'
 
